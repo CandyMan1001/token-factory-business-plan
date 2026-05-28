@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TokenFactory · 商业模式演进</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --g1: #3b82f6;
+      --g2: #10b981;
+      --grad: linear-gradient(135deg, var(--g1), var(--g2));
+      --grad-bg: linear-gradient(135deg, rgba(59, 130, 246, 0.14), rgba(16, 185, 129, 0.14));
+      --solid: #3b82f6;
+      --dash: #f59e0b;
+      --green: #22c55e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
+      background: #fff;
+      color: #1f2937;
+    }
+
+    .grad-text {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .block {
+      transition: box-shadow 0.25s;
+    }
+
+    .block:hover {
+      box-shadow: 0 12px 40px rgba(59, 130, 246, 0.08);
+    }
+
+    .block:hover .node {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(59, 130, 246, 0.14);
+    }
+
+    .block:hover .flow path,
+    .block:hover .flow line {
+      stroke-width: 3;
+      filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.45));
+    }
+
+    .block:hover .flow.dash path,
+    .block:hover .flow.dash line {
+      filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.5));
+    }
+
+    .node {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.55rem 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-align: center;
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      transition: transform 0.2s, box-shadow 0.2s;
+      line-height: 1.35;
+      min-width: 5.5rem;
+    }
+
+    .node-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      background: linear-gradient(135deg, #fef9c3, #fde68a);
+      border-color: #eab308;
+    }
+
+    .node-accent {
+      background: var(--grad);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+    }
+
+    .node-oval {
+      border-radius: 9999px;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+
+    .spine {
+      width: 2px;
+      height: 2rem;
+      margin: 0.35rem auto;
+      background: repeating-linear-gradient(
+        to bottom,
+        #94a3b8 0 3px,
+        transparent 3px 7px
+      );
+    }
+
+    .panel-dashed {
+      border: 2px dashed #cbd5e1;
+      border-radius: 1rem;
+      background: #f8fafc;
+      padding: 1.25rem 1rem 1.5rem;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 0.35rem;
+      white-space: nowrap;
+    }
+
+    .tag-solid { color: var(--solid); background: rgba(59, 130, 246, 0.12); }
+    .tag-dash { color: #b45309; background: rgba(245, 158, 11, 0.15); }
+
+    .upgrade-arrow {
+      width: 0;
+      height: 0;
+      border-left: 32px solid transparent;
+      border-right: 32px solid transparent;
+      border-top: 40px solid var(--green);
+      filter: drop-shadow(0 5px 8px rgba(34, 197, 94, 0.35));
+    }
+
+    .upgrade-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #2563eb;
+      letter-spacing: 0.04em;
+    }
+
+    .flow { transition: filter 0.2s; }
+    .flow path, .flow line { transition: stroke-width 0.2s; }
+
+    @media (min-width: 768px) {
+      .upgrade-title { font-size: 1.6rem; }
+    }
+
+    /* Token 工厂：三列（平台 | 留白箭头区 | 模型用户） */
+    .token-cols {
+      display: grid;
+      grid-template-columns: 1fr minmax(2.75rem, 4.5rem) 1fr;
+      column-gap: 1.25rem;
+      align-items: start;
+    }
+
+    @media (min-width: 640px) {
+      .token-cols {
+        column-gap: 2rem;
+        grid-template-columns: 1fr minmax(3.5rem, 5.5rem) 1fr;
+      }
+    }
+
+    .token-gutter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100%;
+      padding-top: 1.65rem;
+    }
+
+    .arrow-r2l {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 2.5rem;
+      margin-top: 0.15rem;
+    }
+
+    .arrow-r2l svg {
+      width: 100%;
+      max-width: 5rem;
+      height: auto;
+      overflow: visible;
+    }
+  </style>
+</head>
+<body>
+  <header class="border-b border-slate-100 sticky top-0 z-20 bg-white/95 backdrop-blur">
+    <div class="max-w-5xl mx-auto px-5 py-4 flex justify-between items-center gap-4">
+      <div>
+        <h1 class="text-xl md:text-2xl font-bold grad-text m-0">商业模式演进</h1>
+        <p class="text-sm text-slate-500 mt-1 mb-0">算力租赁 → 训练工厂 + Token 工厂</p>
+      </div>
+      <span class="text-xs text-slate-400 shrink-0 hidden sm:block">九章科技</span>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-5 py-8 md:py-12 space-y-10 md:space-y-12">
+
+    <!-- ===== 顶部：原模式 ===== -->
+    <section class="block" aria-labelledby="sec-old">
+      <h2 id="sec-old" class="flex items-center gap-2 text-base md:text-lg font-bold text-slate-800 mb-4">
+        <i class="w-1 h-5 rounded-full inline-block" style="background: var(--grad)"></i>
+        原模式：算力租赁
+      </h2>
+
+      <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-5 md:p-8 relative overflow-hidden">
+        <div class="grid grid-cols-2 gap-4 md:gap-12 max-w-2xl mx-auto relative z-[1]">
+          <div class="flex flex-col items-center">
+            <div class="node node-title w-full max-w-[11rem]">九章算力设施</div>
+            <div class="spine"></div>
+            <div class="node">H卡集群</div>
+          </div>
+          <div class="flex flex-col items-center">
+            <div class="node">models</div>
+            <div class="spine"></div>
+            <div class="node text-slate-600">训练 / 推理</div>
+          </div>
+        </div>
+
+        <svg class="flow absolute inset-0 w-full h-full pointer-events-none hidden sm:block" viewBox="0 0 640 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <defs>
+            <marker id="m-solid" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0, 7 3.5, 0 7" fill="#3b82f6"/></marker>
+            <marker id="m-dash" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0, 7 3.5, 0 7" fill="#f59e0b"/></marker>
+          </defs>
+          <line x1="200" y1="118" x2="440" y2="118" stroke="#3b82f6" stroke-width="2" marker-end="url(#m-solid)"/>
+          <line x1="440" y1="148" x2="200" y2="148" stroke="#f59e0b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#m-dash)"/>
+          <text x="320" y="108" text-anchor="middle" font-size="11" fill="#3b82f6" font-weight="700">租赁</text>
+          <text x="320" y="168" text-anchor="middle" font-size="11" fill="#d97706" font-weight="700">租赁费用</text>
+        </svg>
+
+        <div class="sm:hidden mt-5 space-y-2 text-center text-sm">
+          <p><span class="tag tag-solid">租赁</span> H卡集群 → models</p>
+          <p><span class="tag tag-dash">租赁费用</span> models → H卡集群</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 中间：升级 ===== -->
+    <section class="flex flex-col items-center py-1 block" aria-label="合作战略升级">
+      <div class="upgrade-arrow" role="presentation"></div>
+      <p class="upgrade-title mt-4 mb-0">合作战略升级</p>
+    </section>
+
+    <!-- ===== 底部：新模式 ===== -->
+    <section aria-labelledby="sec-new">
+      <h2 id="sec-new" class="flex items-center gap-2 text-base md:text-lg font-bold text-slate-800 mb-4">
+        <i class="w-1 h-5 rounded-full inline-block" style="background: var(--grad)"></i>
+        新模式：训练工厂 + Token 工厂
+      </h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- 训练工厂 -->
+        <div class="panel-dashed block">
+          <div class="text-center mb-4">
+            <span class="node node-title w-full max-w-[10rem]">训练工厂</span>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mb-2">
+            <div class="flex flex-col items-center">
+              <div class="node text-sm w-full">H卡集群</div>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="node text-sm w-full">models</div>
+              <div class="spine" style="height:1.25rem"></div>
+              <div class="node text-sm text-slate-600 w-full">模型训练</div>
+            </div>
+          </div>
+          <svg class="flow w-full h-16 hidden sm:block" viewBox="0 0 400 64" aria-hidden="true">
+            <defs><marker id="m-s2" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0, 7 3.5, 0 7" fill="#3b82f6"/></marker>
+            <marker id="m-d2" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0, 7 3.5, 0 7" fill="#f59e0b"/></marker></defs>
+            <line x1="60" y1="28" x2="340" y2="28" stroke="#3b82f6" stroke-width="2" marker-end="url(#m-s2)"/>
+            <line x1="340" y1="48" x2="60" y2="48" stroke="#f59e0b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#m-d2)"/>
+            <text x="200" y="22" text-anchor="middle" font-size="10" fill="#3b82f6" font-weight="700">租赁</text>
+            <text x="200" y="60" text-anchor="middle" font-size="10" fill="#d97706" font-weight="700">租赁费用</text>
+          </svg>
+          <div class="sm:hidden text-center text-xs space-y-1 mt-2">
+            <p><span class="tag tag-solid">租赁</span> H卡集群 → models</p>
+            <p><span class="tag tag-dash">租赁费用</span> models → H卡集群</p>
+          </div>
+        </div>
+
+        <!-- Token 工厂 -->
+        <div class="panel-dashed block relative">
+          <div class="text-center mb-4">
+            <span class="node node-title w-full max-w-[10rem]">Token 工厂</span>
+          </div>
+
+          <div class="token-cols relative z-[1]">
+            <!-- 平台侧 -->
+            <div class="flex flex-col items-stretch gap-2">
+              <p class="text-[10px] font-bold text-slate-400 text-center tracking-widest m-0">平台侧</p>
+              <div class="node node-accent text-xs w-full" id="node-hosting">模型托管 / 模型调试</div>
+              <div class="spine" style="height:0.75rem"></div>
+              <div class="node node-accent text-xs w-full">API服务</div>
+              <div class="spine" style="height:0.75rem"></div>
+              <div class="node node-accent text-xs w-full">Token 计费</div>
+            </div>
+
+            <!-- 中间留白 + models → 托管 箭头 -->
+            <div class="token-gutter" aria-hidden="true">
+              <div class="arrow-r2l flow">
+                <svg viewBox="0 0 80 24" class="hidden sm:block">
+                  <defs>
+                    <marker id="m-models-host" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                      <polygon points="0 0, 7 3.5, 0 7" fill="#3b82f6"/>
+                    </marker>
+                  </defs>
+                  <line x1="76" y1="12" x2="6" y2="12" stroke="#3b82f6" stroke-width="2.5" marker-end="url(#m-models-host)"/>
+                </svg>
+                <span class="sm:hidden text-blue-500 text-lg font-bold">←</span>
+              </div>
+            </div>
+
+            <!-- 模型侧 -->
+            <div class="flex flex-col items-stretch gap-2">
+              <p class="text-[10px] font-bold text-slate-400 text-center tracking-widest m-0">模型 · 用户</p>
+              <div class="node text-xs w-full" id="node-models">models</div>
+              <div class="spine" style="height:1rem"></div>
+              <div class="node node-accent node-oval text-xs w-full mx-auto">用户池</div>
+            </div>
+          </div>
+
+          <svg class="flow dash w-full mt-3 hidden sm:block" viewBox="0 0 480 200" aria-hidden="true">
+            <defs>
+              <marker id="m-s3" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0, 7 3.5, 0 7" fill="#3b82f6"/></marker>
+              <marker id="m-d3" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0, 7 3.5, 0 7" fill="#f59e0b"/></marker>
+            </defs>
+            <!-- Token计费 → 用户池 转发推理 -->
+            <line x1="115" y1="118" x2="365" y2="118" stroke="#3b82f6" stroke-width="2" marker-end="url(#m-s3)"/>
+            <text x="235" y="108" font-size="9" fill="#3b82f6" font-weight="700">转发推理需求</text>
+            <!-- API服务 → 用户池 -->
+            <line x1="115" y1="78" x2="365" y2="108" stroke="#3b82f6" stroke-width="2" marker-end="url(#m-s3)"/>
+            <text x="235" y="88" font-size="9" fill="#3b82f6" font-weight="700">API</text>
+            <!-- 收益回路：用户池 → Token计费 -->
+            <path d="M 365 138 L 365 172 L 115 172 L 115 128" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#m-d3)"/>
+            <text x="365" y="168" text-anchor="end" font-size="9" fill="#d97706" font-weight="700">产生服务收益</text>
+            <text x="200" y="168" text-anchor="middle" font-size="9" fill="#d97706" font-weight="700">收益结算</text>
+          </svg>
+
+          <ul class="sm:hidden mt-4 space-y-1.5 text-xs text-slate-600 list-none p-0 m-0">
+            <li>models <span class="text-blue-500 font-bold">→</span> 模型托管 / 模型调试</li>
+            <li><span class="tag tag-solid">转发推理需求</span> Token 计费 → 用户池</li>
+            <li><span class="tag tag-solid">API</span> API服务 → 用户池</li>
+            <li><span class="tag tag-dash">产生服务收益 → 收益结算</span> 用户池 → Token 计费</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 图例 -->
+    <footer class="rounded-xl border border-slate-100 bg-slate-50 px-5 py-4 text-sm text-slate-600">
+      <p class="text-xs font-bold text-slate-500 m-0 mb-2">图例</p>
+      <div class="flex flex-wrap gap-x-6 gap-y-2">
+        <span class="inline-flex items-center gap-2">
+          <span class="w-7 h-0.5 rounded" style="background: var(--grad)"></span> 业务流程（实线）
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <span class="w-7 border-t-2 border-dashed border-amber-400"></span> 资金 / 收益（虚线）
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <span class="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent border-t-green-500"></span>
+          战略升级
+        </span>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>
