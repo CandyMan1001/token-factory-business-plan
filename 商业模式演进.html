@@ -16,6 +16,7 @@
       --green: #22c55e;
       --mint: #ecfdf5;
       --mint-border: #a7f3d0;
+      --site-header-h: 3.25rem;
     }
 
     * { box-sizing: border-box; }
@@ -225,25 +226,49 @@
       overflow: visible;
     }
 
-    /* ===== 训推一体商业化 ===== */
-    .commercial-wrap {
-      margin-top: 4.5rem;
-      padding-top: 3.5rem;
+    /* ===== 大版块：统一标题 + 滚动置顶 ===== */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .page-section {
+      position: relative;
+    }
+
+    .page-section + .page-section {
       border-top: 1px solid #e2e8f0;
     }
 
-    .commercial-page-heading {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: #1e3a5f;
-      margin: 0 0 0.35rem;
+    .section-sticky-head {
+      position: sticky;
+      top: var(--site-header-h);
+      z-index: 12;
+      text-align: left;
+      padding: 1rem 0 1.25rem;
+      margin: 0 0 2rem;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #f1f5f9;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
     }
 
-    .commercial-page-heading::before {
-      content: "";
+    #page-commercial .section-sticky-head { z-index: 13; }
+    #page-tech .section-sticky-head { z-index: 14; }
+
+    .section-head-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.5rem;
+      max-width: 100%;
+    }
+
+    .section-head-bar {
       width: 4px;
       height: 1.5rem;
       border-radius: 2px;
@@ -251,11 +276,35 @@
       flex-shrink: 0;
     }
 
-    .commercial-page-sub {
+    .section-head-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #1e3a5f;
+      margin: 0;
+      letter-spacing: 0.02em;
+      line-height: 1.3;
+    }
+
+    @media (min-width: 768px) {
+      .section-head-title { font-size: 1.6rem; }
+    }
+
+    .section-head-sub {
       font-size: 0.875rem;
       color: #64748b;
-      margin: 0 0 1.75rem;
-      padding-left: 0.75rem;
+      margin: 0.45rem 0 0;
+      line-height: 1.5;
+    }
+
+    .section-body {
+      padding-bottom: 0.5rem;
+    }
+
+  /* ===== 训推一体商业化 ===== */
+    .commercial-wrap {
+      margin-top: 0;
+      padding-top: 2.5rem;
+      border-top: none;
     }
 
     .summary-panel {
@@ -495,6 +544,19 @@
       gap: 0.55rem;
     }
 
+    .tier-list-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #0f766e;
+      padding: 0 0 0.35rem;
+      margin-bottom: 0.1rem;
+      border-bottom: 1px solid var(--mint-border);
+    }
+
     .tier-item {
       display: flex;
       align-items: baseline;
@@ -570,20 +632,212 @@
         font-size: 10px;
       }
     }
+
+    /* ===== 技术支撑 ===== */
+    .tech-wrap {
+      margin-top: 0;
+      padding-top: 2.5rem;
+      border-top: none;
+    }
+
+    .tech-body {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      align-items: stretch;
+    }
+
+    @media (min-width: 1024px) {
+      .tech-body {
+        grid-template-columns: 7fr 3fr;
+        gap: 1.5rem;
+      }
+    }
+
+    .tech-main {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .tech-module {
+      padding: 1.15rem 1rem 1.25rem;
+      border-radius: 1rem;
+      background: #fff;
+    }
+
+    .tech-module--dashed {
+      border: 2px dashed #cbd5e1;
+      flex: 1;
+    }
+
+    .tech-module--solid {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      border-radius: 0;
+    }
+
+    .tech-main-inner {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 1rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .tech-module-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin: 0 0 1rem;
+      text-align: center;
+    }
+
+    .tech-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+    }
+
+    @media (min-width: 640px) {
+      .tech-cards {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.5rem;
+      }
+    }
+
+    .tech-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 0.4rem;
+      border-radius: 0.65rem;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(16, 185, 129, 0.1));
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      min-height: 5.5rem;
+    }
+
+    .tech-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(59, 130, 246, 0.14);
+    }
+
+    .tech-card-icon {
+      width: 1.75rem;
+      height: 1.75rem;
+      color: #3b82f6;
+      flex-shrink: 0;
+    }
+
+    .tech-card-name {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #334155;
+      line-height: 1.35;
+    }
+
+    @media (min-width: 640px) {
+      .tech-card-name { font-size: 0.78rem; }
+    }
+
+    .tech-metrics {
+      display: flex;
+      flex-direction: column;
+      border-radius: 1rem;
+      border: 1.5px solid #e2e8f0;
+      background: #fff;
+      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .tech-metrics-block {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tech-metrics-head {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e3a5f;
+      text-align: center;
+      padding: 0.65rem 0.75rem;
+      margin: 0;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.14), rgba(16, 185, 129, 0.12));
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .tech-metrics-head--plain {
+      background: #fff;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .tech-spec-lines {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 1.25rem 1rem;
+      margin: 0;
+      list-style: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(16, 185, 129, 0.06));
+    }
+
+    .tech-perf-body {
+      flex: 1;
+      padding: 1rem 1.15rem 1.25rem;
+      font-size: 0.8rem;
+      line-height: 1.75;
+      color: #1f2937;
+    }
+
+    .tech-perf-body p {
+      margin: 0 0 0.85rem;
+      text-align: left;
+    }
+
+    .tech-perf-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .tech-perf-body strong {
+      color: #0f766e;
+      font-weight: 800;
+    }
   </style>
 </head>
 <body>
-  <header class="border-b border-slate-100 sticky top-0 z-20 bg-white/95 backdrop-blur">
-    <div class="max-w-6xl mx-auto px-5 py-4 flex justify-between items-center gap-4">
-      <div>
-        <h1 class="text-xl md:text-2xl font-bold grad-text m-0">商业模式演进</h1>
-        <p class="text-sm text-slate-500 mt-1 mb-0">算力租赁 → 训练工厂 + Token 工厂</p>
-      </div>
-      <span class="text-xs text-slate-400 shrink-0 hidden sm:block">九章云极</span>
+  <header class="site-header">
+    <div class="max-w-6xl mx-auto px-5 py-3 flex justify-end items-center">
+      <span class="text-xs text-slate-400">九章云极</span>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 sm:px-5 py-8 md:py-12 space-y-10 md:space-y-12">
+  <main class="max-w-6xl mx-auto px-4 sm:px-5 pb-10 md:pb-14">
+
+    <!-- ===== 商业模式演进 ===== -->
+    <section class="page-section" id="page-evolution">
+      <div class="section-sticky-head">
+        <div class="section-head-row">
+          <span class="section-head-bar" aria-hidden="true"></span>
+          <h2 class="section-head-title">商业模式演进</h2>
+        </div>
+        <p class="section-head-sub">算力租赁 → 训练工厂 + Token 工厂</p>
+      </div>
+
+      <div class="section-body space-y-10 md:space-y-12 pt-2">
 
     <!-- ===== 顶部：原模式 ===== -->
     <section class="block" aria-labelledby="sec-old">
@@ -754,10 +1008,18 @@
       </div>
     </section>
 
+      </div>
+    </section>
+
     <!-- ===== 训推一体商业化形式 ===== -->
-    <section class="commercial-wrap" aria-labelledby="sec-commercial">
-      <h2 id="sec-commercial" class="commercial-page-heading">训推一体商业化形式</h2>
-      <p class="commercial-page-sub">可交付模型厂商的 token 工厂的商业化形式</p>
+    <section class="page-section commercial-wrap" id="page-commercial" aria-labelledby="sec-commercial">
+      <div class="section-sticky-head">
+        <div class="section-head-row">
+          <span class="section-head-bar" aria-hidden="true"></span>
+          <h2 id="sec-commercial" class="section-head-title">训推一体商业化形式</h2>
+        </div>
+        <p class="section-head-sub">可交付模型厂商的 token 工厂的商业化形式</p>
+      </div>
 
       <div class="layout-main">
         <aside class="summary-panel">
@@ -844,6 +1106,10 @@
             </div>
           </div>
           <ul class="tier-list">
+            <li class="tier-list-head">
+              <span>月度token消耗量级</span>
+              <span>单价（/百万token）</span>
+            </li>
             <li class="tier-item">
               <span class="tier-range">0 ~ X 亿 token</span>
               <span class="tier-price">单价：A</span>
@@ -891,6 +1157,112 @@
             <text x="384" y="156" text-anchor="middle" class="chart-label">Z</text>
           </svg>
         </section>
+      </div>
+    </section>
+
+    <!-- ===== 技术支撑 ===== -->
+    <section class="page-section tech-wrap" id="page-tech" aria-labelledby="sec-tech">
+      <div class="section-sticky-head">
+        <div class="section-head-row">
+          <span class="section-head-bar" aria-hidden="true"></span>
+          <h2 id="sec-tech" class="section-head-title">技术支撑</h2>
+        </div>
+        <p class="section-head-sub">为视频生成模型提供高性能推理服务平台</p>
+      </div>
+
+      <div class="tech-body">
+        <div class="tech-main-inner">
+          <div class="tech-module tech-module--dashed">
+            <h3 class="tech-module-title">视频生成模型专属技术需求</h3>
+            <div class="tech-cards">
+              <div class="tech-card">
+                <svg class="tech-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                </svg>
+                <span class="tech-card-name">对象存储</span>
+              </div>
+              <div class="tech-card">
+                <svg class="tech-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h10"/><path d="M18 18l2 2 2-2"/>
+                </svg>
+                <span class="tech-card-name">任务队列</span>
+              </div>
+              <div class="tech-card">
+                <svg class="tech-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h4"/>
+                </svg>
+                <span class="tech-card-name">素材管理</span>
+              </div>
+              <div class="tech-card">
+                <svg class="tech-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+                <span class="tech-card-name">latent 缓存</span>
+              </div>
+              <div class="tech-card">
+                <svg class="tech-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+                </svg>
+                <span class="tech-card-name">视频分发</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tech-module tech-module--solid">
+            <h3 class="tech-module-title">推理服务平台基础能力</h3>
+            <div class="tech-cards">
+              <div class="tech-card">
+                <svg class="tech-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                </svg>
+                <span class="tech-card-name">模型管理</span>
+              </div>
+              <div class="tech-card">
+                <svg class="tech-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01"/><path d="M10 10h8"/><path d="M6 14h.01"/><path d="M10 14h4"/>
+                </svg>
+                <span class="tech-card-name">GPU 调度</span>
+              </div>
+              <div class="tech-card">
+                <svg class="tech-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/><path d="M3 20h18"/>
+                </svg>
+                <span class="tech-card-name">实例扩缩容</span>
+              </div>
+              <div class="tech-card">
+                <svg class="tech-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 3v18h18"/><path d="M7 16l4-6 4 3 5-7"/>
+                </svg>
+                <span class="tech-card-name">监控</span>
+              </div>
+              <div class="tech-card">
+                <svg class="tech-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 7h16"/><path d="M4 12h10"/><path d="M4 17h6"/><circle cx="17" cy="17" r="3"/><path d="M19 19l2 2"/>
+                </svg>
+                <span class="tech-card-name">API 服务</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="tech-metrics" aria-label="标准规格与性能指标">
+          <div class="tech-metrics-block">
+            <h3 class="tech-metrics-head">标准任务规格</h3>
+            <ul class="tech-spec-lines">
+              <li>5 秒</li>
+              <li>720P</li>
+              <li>24fps</li>
+              <li>Text-to-Video</li>
+            </ul>
+          </div>
+          <div class="tech-metrics-block">
+            <h3 class="tech-metrics-head tech-metrics-head--plain">性能指标要求</h3>
+            <div class="tech-perf-body">
+              <p>时延指标：<strong>60 秒</strong>内完成 <strong>95%</strong> 标准任务</p>
+              <p>排队时间：<strong>95%</strong> 的任务 Queue Time <strong>&lt; 5 秒</strong></p>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
 

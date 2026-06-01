@@ -308,6 +308,19 @@
       gap: 0.55rem;
     }
 
+    .tier-list-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #0f766e;
+      padding: 0 0 0.35rem;
+      margin-bottom: 0.1rem;
+      border-bottom: 1px solid var(--mint-border);
+    }
+
     .tier-item {
       display: flex;
       align-items: baseline;
@@ -507,6 +520,10 @@
         </div>
 
         <ul class="tier-list">
+          <li class="tier-list-head">
+            <span>月度token消耗量级</span>
+            <span>单价（/百万token）</span>
+          </li>
           <li class="tier-item">
             <span class="tier-range">0 ~ X 亿 token</span>
             <span class="tier-price">单价：A</span>
